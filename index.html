@@ -136,7 +136,8 @@
             submitType: formData.submitType,
             customType: formData.customType,
             fileName: file ? file.name : '',
-            mimeType: file ? file.type : ''
+            mimeType: file ? file.type : '',
+            origin: window.location.origin // ★ 추가됨: 내 주소가 깃허브임을 구글에 전달합니다.
           };
 
           if (!SCRIPT_URL.startsWith('http')) {
@@ -164,6 +165,9 @@
             await new Promise((resolve, reject) => {
               const xhr = new XMLHttpRequest();
               xhr.open('PUT', result.uploadUrl, true);
+              
+              // ★ 추가됨: 파일의 종류를 명확히 지정해 주어 구글 서버의 혼란을 방지합니다.
+              xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream'); 
               
               xhr.upload.onprogress = (e) => {
                 if (e.lengthComputable) {
