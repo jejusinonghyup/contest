@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>꿈을 싣는 DAY 공모전 제출</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const App = () => {
+      const [formData, setFormData] = useState({
+        school: '',
+        name: '',
+        contact: '',
+        title: '',
+        description: '',
+        submissionMethod: '',
+        submitType: '',
+        customType: '',
+      });
+      const [file, setFile] = useState(null);
+      const [isSubmitting, setIsSubmitting] = useState(false);
+      const [progress, setProgress] = useState(0);
+      const [isSuccess, setIsSuccess] = useState(false);
+      const [error, setError] = useState('');
+      
+      const fileInputRef = useRef(null);
+
+      const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+      };
+
+      const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const selectedFile = e.target.files[0];
+          if (selectedFile.size > 300 * 1024 * 1024) { 
+            setError('파일 용량은 최대 300MB까지만 업로드 가능합니다.');
+            return;
+          }
+          setError('');
+          setFile(selectedFile);
+        }
+      };
+
+      const handleDragOver = (e) => {
+        e.preventDefault();
+      };
+
+      const handleDrop = (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          const droppedFile = e.dataTransfer.files[0];
+          if (droppedFile.size > 300 * 1024 * 1024) { 
+            setError('파일 용량은 최대 300MB까지만 업로드 가능합니다.');
+            return;
+          }
+          setError('');
+          setFile(droppedFile);
+        }
+      };
+
+      const triggerFileInput = () => {
+        fileInputRef.current.click();
+      };
+
+      const removeFile = () => {
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      };
+
+      const validateForm = () => {
+        if (!formData.school) return '학교명을 입력해주세요.';
+        if (!formData.name) return '성명을 입력해주세요.';
+        if (!formData.contact) return '연락처를 입력해주세요.';
+        if (!formData.title) return '작품 제목을 입력해주세요.';
+        if (!formData.description) return '내용 설명을 입력해주세요.';
+        if (!formData.submissionMethod) return '접수 방법을 선택해주세요.';
+        if (!formData.submitType) return '작품 형태를 선택해주세요.';
+        if (formData.submitType === '기타' && !formData.customType) return '기타 작품 형태를 입력해주세요.';
+        if (formData.submissionMethod === '온라인접수' && !file) return '업로드할 작품 파일을 첨부해주세요.';
+        return null;
+      };
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        const validationError = validateForm();
+        if (validationError) {
+          setError(validationError);
+          return;
+        }
+
+        setError('');
+        setIsSubmitting(true);
+        setProgress(5);
+
+        try {
+          // =========================================================================
+          // ★★★ 중요: 아래 SCRIPT_URL 안에 발급받으신 구글 웹앱 URL을 붙여넣으세요 ★★★
+          // =========================================================================
+          
+          const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzM6UKS3XuQZiHOFGiqzR4nRrbfTyQ7pCUi0YfGDw7dvANNuB3zpOF7Av0QbD41dZDNzg/exec'; 
+          
+          // =========================================================================
+
+          const payload = {
+            school: formData.school,
+            name: formData.name,
+            contact: formData.contact,
+            title: formData.title,
+            description: formData.description,
+            submissionMethod: formData.submissionMethod,
+            submitType: formData.submitType,
+            customType: formData.customType,
+            fileName: file ? file.name : '',
+            mimeType: file ? file.type : ''
+          };
+
+          if (!SCRIPT_URL.startsWith('http')) {
+            setProgress(100);
+            setTimeout(() => {
+              setIsSubmitting(false);
+              setIsSuccess(true);
+            }, 800);
+            return;
+          }
+
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+
+          if (result.result !== 'success') {
+            throw new Error(result.message || '서버 오류가 발생했습니다.');
+          }
+
+          if (formData.submissionMethod === '온라인접수' && file && result.uploadUrl) {
+            await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('PUT', result.uploadUrl, true);
+              
+              xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                  const percentComplete = 5 + Math.round((e.loaded / e.total) * 95);
+                  setProgress(percentComplete);
+                }
+              };
+              
+              xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  resolve();
+                } else {
+                  reject(new Error('파일 직접 업로드 중 오류가 발생했습니다.'));
+                }
+              };
+              
+              xhr.onerror = () => reject(new Error('네트워크 연결이 끊어졌습니다.'));
+              
+              xhr.send(file);
+            });
+          } else {
+            setProgress(100);
+          }
+
+          setTimeout(() => {
+            setIsSubmitting(false);
+            setIsSuccess(true);
+          }, 500);
+
+        } catch (err) {
+          console.error(err);
+          setError(err.message || '제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+          setIsSubmitting(false);
+          setProgress(0);
+        }
+      };
+
+      const resetForm = () => {
+        setFormData({
+          school: '', name: '', contact: '', title: '', description: '',
+          submissionMethod: '', submitType: '', customType: '',
+        });
+        setFile(null); setIsSuccess(false); setProgress(0);
+      };
+
+      const submissionTypes = [
+        { id: '사진', iconClass: 'fa-regular fa-image' },
+        { id: '영상', iconClass: 'fa-solid fa-video' },
+        { id: '그림', iconClass: 'fa-solid fa-pen-nib' },
+        { id: '글쓰기', iconClass: 'fa-regular fa-file-lines' },
+        { id: '기타', iconClass: 'fa-solid fa-ellipsis' },
+      ];
+
+      if (isSuccess) {
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans text-gray-800">
+            <div className="bg-white max-w-md w-full rounded-3xl shadow-xl overflow-hidden p-8 text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="fa-solid fa-circle-check text-4xl text-green-500"></i>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">제출 완료!</h2>
+              <p className="text-gray-500 mb-8">
+                공모전 작품이 성공적으로 제출되었습니다.<br/>
+                (구글 드라이브로 파일 전송 완료)
+              </p>
+              <div className="bg-gray-50 rounded-xl p-4 mb-8 text-left text-sm text-gray-600">
+                <p className="mb-2"><span className="font-semibold text-gray-800">이름:</span> {formData.name}</p>
+                <p className="mb-2"><span className="font-semibold text-gray-800">학교:</span> {formData.school}</p>
+                <p className="mb-2"><span className="font-semibold text-gray-800">제목:</span> {formData.title}</p>
+                <p><span className="font-semibold text-gray-800">분야:</span> {formData.submitType === '기타' ? formData.customType : formData.submitType}</p>
+              </div>
+              <button onClick={resetForm} className="w-full bg-green-600 text-white font-semibold py-4 rounded-xl hover:bg-green-700 transition-colors">
+                추가 제출하기
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-white max-w-md w-full rounded-3xl shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-br from-green-600 to-emerald-700 p-8 text-white text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+              <h1 className="text-xl font-extrabold tracking-tight mb-2 relative z-10 break-keep">제주시농협 도시농업의 날 기념<br/>'꿈을 싣는 DAY' 공모전 제출 사이트</h1>
+              <p className="text-green-100 text-sm font-medium relative z-10">여러분의 멋진 작품을 기다립니다.</p>
+              <p className="text-white/80 text-xs font-medium mt-3 relative z-10">- 문의처 : 064-750-6136 (신용기획팀) -</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+              
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center gap-2">
+                  <i className="fa-solid fa-circle-exclamation"></i>
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fa-solid fa-school text-gray-400"></i>
+                  </div>
+                  <input type="text" name="school" value={formData.school} onChange={handleInputChange} className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 text-sm transition-all" placeholder="학교명 (예: 한국초등학교)" disabled={isSubmitting} />
+                </div>
+
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fa-solid fa-user text-gray-400"></i>
+                  </div>
+                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 text-sm transition-all" placeholder="성명 (예: 홍길동)" disabled={isSubmitting} />
+                </div>
+
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fa-solid fa-phone text-gray-400"></i>
+                  </div>
+                  <input type="tel" name="contact" value={formData.contact} onChange={handleInputChange} className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 text-sm transition-all" placeholder="연락처 (예: 010-1234-5678)" disabled={isSubmitting} />
+                </div>
+              </div>
+
+              <div className="w-full h-px bg-gray-100 my-4"></div>
+
+              <div className="space-y-4">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fa-solid fa-font text-gray-400"></i>
+                  </div>
+                  <input type="text" name="title" value={formData.title} onChange={handleInputChange} className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 text-sm transition-all" placeholder="작품 제목" disabled={isSubmitting} />
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute top-3.5 left-3 pointer-events-none">
+                    <i className="fa-solid fa-align-left text-gray-400"></i>
+                  </div>
+                  <textarea name="description" value={formData.description} onChange={handleInputChange} className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 text-sm transition-all min-h-[100px] resize-y" placeholder="작품 내용 설명 (자세히 적어주세요)" disabled={isSubmitting} />
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">접수 방법</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {['온라인접수', '현장접수'].map((method) => (
+                    <button key={method} type="button" onClick={() => { setFormData(prev => ({ ...prev, submissionMethod: method })); if (method === '현장접수') setFile(null); }} disabled={isSubmitting} className={`py-3 rounded-xl border text-sm font-medium transition-all ${formData.submissionMethod === method ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>
+                      {method}
+                    </button>
+                  ))}
+                </div>
+                {formData.submissionMethod === '현장접수' && (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 font-medium animate-fadeIn text-center break-keep">
+                    본 페이지에서 공모전 접수 완료 후, 작품은 담임선생님께 제출해주세요.
+                  </div>
+                )}
+              </div>
+
+              <div className="w-full h-px bg-gray-100 my-4"></div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">작품 형태</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {submissionTypes.map((type) => {
+                    const isSelected = formData.submitType === type.id;
+                    return (
+                      <button key={type.id} type="button" onClick={() => setFormData(prev => ({ ...prev, submitType: type.id }))} disabled={isSubmitting} className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${isSelected ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>
+                        <i className={`${type.iconClass} text-lg mb-1.5 ${isSelected ? 'text-green-600' : 'text-gray-400'}`}></i>
+                        <span className="text-xs font-medium">{type.id}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+                
+                {formData.submitType === '기타' && (
+                  <div className="mt-3 animate-fadeIn">
+                    <input type="text" name="customType" value={formData.customType} onChange={handleInputChange} className="block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 text-sm transition-all" placeholder="어떤 형태의 작품인지 적어주세요" disabled={isSubmitting} />
+                  </div>
+                )}
+              </div>
+
+              {formData.submissionMethod === '온라인접수' && (
+                <div className="animate-fadeIn">
+                  <div className="mb-3">
+                    <label className="flex items-center text-sm font-semibold text-gray-700">
+                      작품 업로드
+                      <span className="ml-2 text-xs font-medium text-red-500 bg-red-50 px-2 py-0.5 rounded-md border border-red-100">최대 300MB</span>
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1.5">
+                      (파일명은 '학교명+학년명+성명'으로 작성. (예) 북초 6학년 홍길동)
+                    </p>
+                  </div>
+                  <div onDragOver={handleDragOver} onDrop={handleDrop} className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${file ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-green-400 bg-gray-50 hover:bg-green-50/50'}`}>
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" disabled={isSubmitting} />
+                    
+                    {!file ? (
+                      <div className="cursor-pointer flex flex-col items-center" onClick={triggerFileInput}>
+                        <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-3">
+                          <i className="fa-solid fa-cloud-arrow-up text-xl text-green-500"></i>
+                        </div>
+                        <p className="text-sm font-medium text-gray-700 mb-1">여기를 눌러 파일을 선택하거나</p>
+                        <p className="text-xs text-gray-400">파일을 이쪽으로 드래그 하세요</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <i className="fa-solid fa-file-lines text-3xl text-green-500 mb-3"></i>
+                        <p className="text-sm font-medium text-gray-800 truncate max-w-[200px] mb-1">{file.name}</p>
+                        <p className="text-xs text-gray-500 mb-4">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                        <button type="button" onClick={removeFile} className="text-xs text-red-500 font-medium hover:text-red-700 bg-white px-3 py-1.5 rounded-full shadow-sm" disabled={isSubmitting}>
+                          파일 취소
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-4">
+                <button type="submit" disabled={isSubmitting} className={`w-full flex items-center justify-center py-4 rounded-xl text-white font-bold text-lg transition-all ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-700 hover:bg-green-800 hover:shadow-lg active:scale-[0.98]'}`}>
+                  {isSubmitting ? (
+                    <div className="flex flex-col items-center w-full px-6">
+                      <span className="text-sm font-medium mb-2">업로드 중... {progress}%</span>
+                      <div className="w-full bg-gray-600 rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-white h-1.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>제출하기 <i className="fa-solid fa-chevron-right ml-2 text-sm"></i></>
+                  )}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
