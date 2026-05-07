@@ -69,7 +69,7 @@
         <div id="step-loading" class="hidden fade-in text-center py-20 px-6 bg-white rounded-xl shadow-lg border max-w-md mx-auto">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mb-6 mx-auto"></div>
             <h2 id="loading-title" class="text-xl font-bold text-gray-800 mb-2">전송 준비 중...</h2>
-            <p id="loading-msg" class="text-gray-600 mb-6 text-sm">용량에 따라 대기 시간이 소요될 수 있습니다.<br>화면을 새로고침하지 마세요.</p>
+            <p id="loading-msg" class="text-gray-600 mb-6 text-sm">안전한 데이터 처리를 위해<br>약 10~30초 정도 소요될 수 있습니다.</p>
             <div id="progress-container" class="hidden w-full bg-gray-200 rounded-full h-4 mb-2"><div id="progress-bar" class="progress-bar-fill bg-green-600 h-4 rounded-full" style="width: 0%"></div></div>
             <p id="progress-text" class="hidden text-green-700 font-bold text-xl mt-2">0%</p>
         </div>
@@ -183,10 +183,11 @@
         
         // =========================================================================
         // ★★★ [주의] 구글 웹 앱 URL을 아래 작은따옴표 사이에 넣어주세요! ★★★
+        // ★★★ 끝이 반드시 /exec 로 끝나야 합니다! (/dev 안됨) ★★★
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8ENpmFycmj56t9hsmj6Pb2ihzot5TrLr3Q4E-bEUNw-UiRO0Bq1f3TXn34CU0DIYanA/exec';
         // =========================================================================
 
-        const MAX_TOTAL_SIZE = 15 * 1024 * 1024;
+        const MAX_TOTAL_SIZE = 15 * 1024 * 1024; // 15MB
 
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const listDiv = document.getElementById('fileList');
@@ -223,7 +224,7 @@
             } else {
                 btns.check.className = 'flex-1 py-4 font-bold text-green-700 border-b-4 border-green-600 bg-white';
                 btns.apply.className = 'flex-1 py-4 font-bold text-gray-500 hover:text-green-600 transition';
-                secCheck.classList.remove('hidden'); secs.apply.classList.add('hidden');
+                secs.check.classList.remove('hidden'); secs.apply.classList.add('hidden');
             }
         }
 
@@ -300,8 +301,7 @@
             document.getElementById('progress-text').classList.toggle('hidden', !isFileUpload);
             showStep('loading');
 
-            await new Promise(resolve => setTimeout(resolve, 100));
-
+            // ★ 통신 방식 변경 (아이폰/사파리 연결 오류 방지용 Fetch API 적용) ★
             try {
                 let filesDataArray = [];
                 if (isFileUpload) {
@@ -311,13 +311,47 @@
                         filesDataArray.push({ fileName: f.name, mimeType: f.type, fileData: base64 });
                     }
                 }
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", GOOGLE_SCRIPT_URL, true);
-                xhr.upload.onprogress = e => { if (e.lengthComputable && isFileUpload) { const p = Math.round((e.loaded / e.total) * 100); document.getElementById('progress-bar').style.width = p + '%'; document.getElementById('progress-text').innerText = p + '%'; if(p >= 100) document.getElementById('loading-title').innerText = "전송 완료! 처리 중입니다..."; } };
-                xhr.onload = () => { if (xhr.status === 200) { finish(data); } else { alert('서버 오류'); showStep('form'); } };
-                xhr.onerror = () => { alert('연결 오류'); showStep('form'); };
-                xhr.send(JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail }));
-            } catch (err) { alert('처리 오류'); showStep('form'); }
+
+                // 가짜 진행률 애니메이션 (화면 멈춤 방지)
+                let progress = 0;
+                let progressInterval;
+                if (isFileUpload) {
+                    progressInterval = setInterval(() => {
+                        progress += Math.floor(Math.random() * 10) + 5;
+                        if (progress > 90) progress = 90;
+                        document.getElementById('progress-bar').style.width = progress + '%';
+                        document.getElementById('progress-text').innerText = progress + '%';
+                    }, 500);
+                }
+
+                const payload = JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail });
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 크로스 도메인 에러 방지 핵심
+                    body: payload,
+                    redirect: 'follow'
+                });
+
+                if (isFileUpload) {
+                    clearInterval(progressInterval);
+                    document.getElementById('progress-bar').style.width = '100%';
+                    document.getElementById('progress-text').innerText = '100%';
+                    document.getElementById('loading-title').innerText = "전송 완료! 처리 중입니다...";
+                }
+
+                const res = await response.json();
+                if (res.result === 'success') {
+                    finish(data);
+                } else {
+                    alert('구글 시트 기록 중 오류가 발생했습니다: ' + res.error);
+                    showStep('form');
+                }
+
+            } catch (err) { 
+                alert('통신 연결에 실패했습니다. (인터넷 상태 또는 구글 보안 차단일 수 있습니다.)'); 
+                showStep('form'); 
+            }
         }
 
         function finish(data) {
@@ -337,10 +371,12 @@
             const childName = document.getElementById('check-childName').value.trim();
             const guardianName = document.getElementById('check-guardianName').value.trim();
             const resultDiv = document.getElementById('check-result');
+            
             if(!childName || !guardianName) { alert('성명을 모두 입력해주세요.'); return; }
             document.getElementById('check-btn-text').innerText = '조회 중...';
             document.getElementById('check-spinner').classList.remove('hidden');
             resultDiv.classList.add('hidden');
+
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=check&childName=${encodeURIComponent(childName)}&guardianName=${encodeURIComponent(guardianName)}`);
                 const res = await response.json();
@@ -362,7 +398,7 @@
                     resultDiv.innerHTML = `<div class="bg-gray-100 p-8 rounded-lg text-center"><i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-gray-400 mb-2"></i><p class="text-gray-500">접수 내역이 없습니다.</p></div>`;
                     lucide.createIcons();
                 }
-            } catch (err) { alert('조회 오류'); } finally { document.getElementById('check-btn-text').innerText = '조회하기'; document.getElementById('check-spinner').classList.add('hidden'); }
+            } catch (err) { alert('조회 오류가 발생했습니다. 구글 주소가 정확한지 확인해 주세요.'); } finally { document.getElementById('check-btn-text').innerText = '조회하기'; document.getElementById('check-spinner').classList.add('hidden'); }
         }
     </script>
 </body>
