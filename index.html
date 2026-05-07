@@ -69,9 +69,12 @@
         <div id="step-loading" class="hidden fade-in text-center py-20 px-6 bg-white rounded-xl shadow-lg border max-w-md mx-auto">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mb-6 mx-auto"></div>
             <h2 id="loading-title" class="text-xl font-bold text-gray-800 mb-2">전송 준비 중...</h2>
-            <p id="loading-msg" class="text-gray-600 mb-6 text-sm">화면을 새로고침하지 마세요.</p>
-            <div id="progress-container" class="hidden w-full bg-gray-200 rounded-full h-4 mb-2"><div id="progress-bar" class="progress-bar-fill bg-green-600 h-4 rounded-full" style="width: 0%"></div></div>
-            <p id="progress-text" class="hidden text-green-700 font-bold text-lg">0%</p>
+            <p id="loading-msg" class="text-gray-600 mb-6 text-sm">용량에 따라 최대 1~2분이 소요됩니다.<br>화면을 새로고침하지 마세요.</p>
+            
+            <div id="progress-container" class="hidden w-full bg-gray-200 rounded-full h-4 mb-2">
+                <div id="progress-bar" class="progress-bar-fill bg-green-600 h-4 rounded-full" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="hidden text-green-700 font-bold text-xl mt-2">0%</p>
         </div>
 
         <div id="step-completed" class="hidden fade-in max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center border-t-8 border-green-500">
@@ -147,12 +150,16 @@
                             <label class="block text-sm font-bold mb-3 flex items-center text-gray-800"><i data-lucide="upload-cloud" class="w-5 h-5 mr-2 text-green-600"></i>작품 파일 업로드 (여러 개 선택 가능)</label>
                             <input type="file" id="fileInput" name="file" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer transition">
                             <div id="fileList" class="mt-4 space-y-2 text-sm text-gray-600 hidden bg-gray-50 p-3 rounded-lg border"></div>
-                            <p class="mt-4 text-xs text-gray-500 leading-relaxed">형식: HWP, JPG, PNG, PDF, MP4 등<br><span class="text-blue-600 font-medium">* 50MB 이상의 파일은 메일 제출을 권장합니다.</span></p>
+                            <p class="mt-4 text-xs text-gray-500 leading-relaxed">
+                                형식: HWP, JPG, PNG, PDF 등<br>
+                                <span class="text-red-600 font-bold">* 파일 용량 제한: 총 15MB 이하</span><br>
+                                <span class="text-blue-600 font-medium">* 동영상이나 15MB가 넘는 고용량 파일은 아래의 [메일 제출]을 꼭 이용해 주세요.</span>
+                            </p>
                         </div>
                         <label class="flex items-start bg-white p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
                             <input type="checkbox" id="emailCheck" name="submitByEmail" onchange="toggleEmailOption(this)" class="mt-1 mr-3 w-5 h-5 text-green-600 rounded">
                             <div class="text-sm w-full">
-                                <p class="font-bold text-gray-800">파일이 크거나 업로드가 안 되면 메일로 제출</p>
+                                <p class="font-bold text-gray-800">파일 용량이 크거나 동영상인 경우 메일로 제출</p>
                                 <div id="email-guide" class="hidden mt-3 p-4 bg-green-50 rounded-lg border border-green-200 text-green-800 w-full">
                                     <p class="text-sm mb-2 font-bold">nh901018-1@nonghyup.com</p>
                                     <div class="bg-white p-3 rounded border text-sm text-gray-600">
@@ -170,7 +177,35 @@
 
     <script>
         lucide.createIcons();
+        
+        // =========================================================================
+        // ★★★ [주의] 구글 웹 앱 URL을 아래 작은따옴표 사이에 넣어주세요! ★★★
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8ENpmFycmj56t9hsmj6Pb2ihzot5TrLr3Q4E-bEUNw-UiRO0Bq1f3TXn34CU0DIYanA/exec';
+        // =========================================================================
+
+        const MAX_TOTAL_SIZE = 15 * 1024 * 1024; // 15MB 제한 설정
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const listDiv = document.getElementById('fileList');
+            listDiv.innerHTML = '';
+            if(this.files.length > 0) {
+                listDiv.classList.remove('hidden');
+                let totalSize = 0;
+                Array.from(this.files).forEach((file) => {
+                    totalSize += file.size;
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    listDiv.innerHTML += `<div class="flex items-center"><i data-lucide="file" class="w-4 h-4 mr-2 text-green-600"></i><span class="truncate">${file.name}</span> <span class="ml-auto text-gray-400 text-xs">${sizeMB}MB</span></div>`;
+                });
+                lucide.createIcons();
+                
+                if(totalSize > MAX_TOTAL_SIZE) { 
+                    listDiv.innerHTML += `<div class="mt-3 bg-red-50 p-2 rounded text-red-600 font-bold text-xs"><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i>총 용량이 15MB를 초과하여 직접 업로드가 불가합니다.<br>아래의 [메일로 제출] 항목을 체크해 주세요.</div>`;
+                    lucide.createIcons();
+                }
+            } else {
+                listDiv.classList.add('hidden');
+            }
+        });
 
         function showStep(stepId) {
             document.querySelectorAll('#app > div').forEach(div => div.classList.add('hidden'));
@@ -192,7 +227,134 @@
             }
         }
 
-        // 접수 내역 조회 (전체 리스트 대응 버전)
+        function selectWorkType(type) {
+            document.getElementById('workTypeInput').value = type;
+            document.querySelectorAll('.work-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('btn-work-' + type).classList.add('selected');
+            document.getElementById('workTypeOther').classList.toggle('hidden', type !== '기타');
+        }
+
+        function toggleSubmissionType(radio) {
+            document.getElementById('online-options').classList.toggle('hidden', radio.value !== 'online');
+            document.getElementById('onsite-guide').classList.toggle('hidden', radio.value === 'online');
+        }
+
+        function toggleEmailOption(checkbox) {
+            document.getElementById('email-guide').classList.toggle('hidden', !checkbox.checked);
+            document.getElementById('fileInput').disabled = checkbox.checked;
+        }
+
+        function showError(el, msg) {
+            const p = document.createElement('p');
+            p.className = 'error-text text-red-500 text-xs mt-1 font-medium';
+            p.innerText = msg;
+            if(el.id === 'workTypeContainer' || el.id === 'fileInput') { el.parentElement.appendChild(p); } 
+            else { el.classList.add('border-red-500', 'bg-red-50'); el.parentElement.appendChild(p); }
+        }
+
+        document.querySelectorAll('input:not([type="file"]):not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => {
+            el.addEventListener('input', () => {
+                el.classList.remove('border-red-500', 'bg-red-50');
+                const err = el.parentElement.querySelector('.error-text');
+                if (err) err.remove();
+            });
+        });
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = Object.fromEntries(new FormData(form).entries());
+            data.workType = document.getElementById('workTypeInput').value;
+
+            let hasError = false;
+            document.querySelectorAll('.error-text').forEach(e => e.remove());
+
+            const fields = ['childSchool', 'childName', 'childGrade', 'childClass', 'guardianName', 'guardianRelation', 'workTitle', 'workDescription'];
+            fields.forEach(f => {
+                const input = form.querySelector(`[name="${f}"]`);
+                if (!data[f]) { showError(input, '필수 항목입니다.'); hasError = true; }
+            });
+
+            if (!data.workType) { showError(document.getElementById('workTypeContainer'), '작품 유형을 클릭해서 선택해주세요.'); hasError = true; }
+            else if (data.workType === '기타' && !data.workTypeOther) { showError(document.getElementById('workTypeOther'), '어떤 유형인지 직접 입력하세요.'); hasError = true; }
+            
+            const filesObj = document.getElementById('fileInput').files;
+            
+            // 용량 체크 로직 추가 (15MB 초과 시 차단)
+            if (data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0) {
+                let currentTotalSize = 0;
+                for(let i=0; i<filesObj.length; i++) currentTotalSize += filesObj[i].size;
+                if(currentTotalSize > MAX_TOTAL_SIZE) {
+                    alert('첨부하신 파일의 총 용량이 15MB를 초과하여 서버 전송이 불가능합니다.\n\n화면 하단의 [파일 용량이 크거나 동영상인 경우 메일로 제출] 항목을 체크하신 후 접수해 주시기 바랍니다.');
+                    return; // 폼 전송 중단
+                }
+            }
+
+            if (data.submissionType === 'online' && !data.submitByEmail && filesObj.length === 0) { 
+                showError(document.getElementById('fileInput'), '파일을 하나 이상 선택하거나 메일 제출을 체크하세요.'); 
+                hasError = true; 
+            }
+
+            if (hasError) {
+                window.scrollTo({top: document.querySelector('.error-text').offsetTop - 100, behavior: 'smooth'});
+                return;
+            }
+
+            const isFileUpload = data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0;
+            
+            // 로딩 화면 UI 세팅
+            document.getElementById('loading-title').innerText = isFileUpload ? "작품 파일들을 안전하게 전송 중입니다" : "신청 정보를 접수 중입니다";
+            document.getElementById('progress-container').classList.toggle('hidden', !isFileUpload);
+            document.getElementById('progress-text').classList.toggle('hidden', !isFileUpload);
+            showStep('loading');
+
+            // ★ UI(로딩화면)가 먼저 렌더링 될 수 있도록 0.1초 대기 (멈춤 현상 해결 핵심) ★
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            try {
+                let filesDataArray = [];
+                if (isFileUpload) {
+                    for(let i=0; i<filesObj.length; i++) {
+                        const f = filesObj[i];
+                        const base64 = await new Promise(r => { const reader = new FileReader(); reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(f); });
+                        filesDataArray.push({ fileName: f.name, mimeType: f.type, fileData: base64 });
+                    }
+                }
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", GOOGLE_SCRIPT_URL, true);
+                
+                xhr.upload.onprogress = e => { 
+                    if (e.lengthComputable && isFileUpload) { 
+                        const p = Math.round((e.loaded / e.total) * 100); 
+                        document.getElementById('progress-bar').style.width = p + '%'; 
+                        document.getElementById('progress-text').innerText = p + '%'; 
+                        if(p >= 100) document.getElementById('loading-title').innerText = "전송 완료! 시트에 분할 저장 중입니다...";
+                    } 
+                };
+                
+                xhr.onload = () => { 
+                    if (xhr.status === 200) {
+                        const res = JSON.parse(xhr.responseText);
+                        if (res.result === 'success') finish(data); 
+                        else { alert('서버 기록 중 오류가 발생했습니다: ' + res.error); showStep('form'); }
+                    } else { alert('서버 응답 오류가 발생했습니다.'); showStep('form'); }
+                };
+                xhr.onerror = () => { alert('인터넷 연결이 불안정합니다. 다시 시도해 주세요.'); showStep('form'); };
+                
+                xhr.send(JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail }));
+            } catch (err) { alert('파일 변환 중 오류가 발생했습니다.'); showStep('form'); }
+        }
+
+        function finish(data) {
+            document.getElementById('summary').innerHTML = `<p>학생: ${data.childName}</p><p>유형: ${data.workType === '기타' ? data.workTypeOther : data.workType}</p><p>방법: ${data.submissionType === 'online' ? (data.submitByEmail ? '온라인 (메일 별도 제출)' : '온라인 (파일 업로드 완료)') : '현장 접수 (실물 제출)'}</p>`;
+            const extra = document.getElementById('extra-info');
+            if (data.submitByEmail) { extra.className = 'text-green-700 text-sm font-bold mt-2 animate-pulse'; extra.innerText = '* nh901018-1@nonghyup.com 으로 메일을 꼭 보내주세요!'; } 
+            else if (data.submissionType === 'onsite') { extra.className = 'text-amber-700 text-sm font-bold mt-2'; extra.innerText = '* 담임선생님께 실물 작품을 꼭 제출해 주세요!'; } 
+            else { extra.innerText = ''; }
+            showStep('completed');
+        }
+
+        // 조회 기능 로직
         async function checkSubmission() {
             const childName = document.getElementById('check-childName').value.trim();
             const guardianName = document.getElementById('check-guardianName').value.trim();
@@ -210,14 +372,14 @@
                 const res = await response.json();
 
                 resultDiv.classList.remove('hidden');
-                resultDiv.innerHTML = ''; // 초기화
+                resultDiv.innerHTML = ''; 
 
                 if (res.status === 'found') {
                     const header = document.createElement('div');
                     header.innerHTML = `<p class="text-green-700 font-bold text-center mb-4">총 ${res.data.length}건의 접수 내역이 있습니다.</p>`;
                     resultDiv.appendChild(header);
 
-                    res.data.forEach((item, idx) => {
+                    res.data.forEach((item) => {
                         const date = new Date(item.timestamp).toLocaleString('ko-KR');
                         let typeStr = item.submissionType;
                         if(item.submissionType === '온라인') typeStr = item.submitByEmail === 'O' ? '온라인 (메일 제출)' : '온라인 (파일 첨부)';
@@ -241,58 +403,6 @@
                 document.getElementById('check-btn-text').innerText = '조회하기';
                 document.getElementById('check-spinner').classList.add('hidden');
             }
-        }
-
-        // 아이콘 선택 및 기타 로직 (기존과 동일)
-        function selectWorkType(type) {
-            document.getElementById('workTypeInput').value = type;
-            document.querySelectorAll('.work-btn').forEach(btn => btn.classList.remove('selected'));
-            document.getElementById('btn-work-' + type).classList.add('selected');
-            document.getElementById('workTypeOther').classList.toggle('hidden', type !== '기타');
-        }
-        function toggleSubmissionType(radio) {
-            document.getElementById('online-options').classList.toggle('hidden', radio.value !== 'online');
-            document.getElementById('onsite-guide').classList.toggle('hidden', radio.value === 'online');
-        }
-        function toggleEmailOption(checkbox) {
-            document.getElementById('email-guide').classList.toggle('hidden', !checkbox.checked);
-            document.getElementById('fileInput').disabled = checkbox.checked;
-        }
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            const form = e.target;
-            const data = Object.fromEntries(new FormData(form).entries());
-            data.workType = document.getElementById('workTypeInput').value;
-            if(!data.childName || !data.workType) { alert('필수 항목을 입력하세요.'); return; }
-
-            const filesObj = document.getElementById('fileInput').files;
-            const isFileUpload = data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0;
-            
-            document.getElementById('loading-title').innerText = isFileUpload ? "작품 파일을 전송 중입니다" : "접수 정보를 기록 중입니다";
-            document.getElementById('progress-container').classList.toggle('hidden', !isFileUpload);
-            showStep('loading');
-
-            try {
-                let filesDataArray = [];
-                if (isFileUpload) {
-                    for(let i=0; i<filesObj.length; i++) {
-                        const f = filesObj[i];
-                        const base64 = await new Promise(r => { const reader = new FileReader(); reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(f); });
-                        filesDataArray.push({ fileName: f.name, mimeType: f.type, fileData: base64 });
-                    }
-                }
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", GOOGLE_SCRIPT_URL, true);
-                xhr.upload.onprogress = e => { if (e.lengthComputable && isFileUpload) { const p = Math.round((e.loaded / e.total) * 100); document.getElementById('progress-bar').style.width = p + '%'; document.getElementById('progress-text').innerText = p + '%'; } };
-                xhr.onload = () => { if (JSON.parse(xhr.responseText).result === 'success') finish(data); else alert('오류'); };
-                xhr.send(JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail }));
-            } catch (err) { alert('오류'); showStep('form'); }
-        }
-
-        function finish(data) {
-            document.getElementById('summary').innerHTML = `<p>학생: ${data.childName}</p><p>유형: ${data.workType}</p>`;
-            showStep('completed');
         }
     </script>
 </body>
