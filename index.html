@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <div id="step-rejected" class="hidden fade-in max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
+        <div id="step-rejected" class="hidden fade-in max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center border border-gray-100">
             <i data-lucide="x-circle" class="w-16 h-16 mx-auto text-red-500 mb-4"></i>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">접수 불가</h2><p class="text-gray-600 mb-6">동의 거부 시 접수가 종료됩니다.</p>
             <button onclick="location.reload()" class="text-green-600 font-bold underline">처음으로 돌아가기</button>
@@ -69,20 +69,17 @@
         <div id="step-loading" class="hidden fade-in text-center py-20 px-6 bg-white rounded-xl shadow-lg border max-w-md mx-auto">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mb-6 mx-auto"></div>
             <h2 id="loading-title" class="text-xl font-bold text-gray-800 mb-2">전송 준비 중...</h2>
-            <p id="loading-msg" class="text-gray-600 mb-6 text-sm">용량에 따라 최대 1~2분이 소요됩니다.<br>화면을 새로고침하지 마세요.</p>
-            
-            <div id="progress-container" class="hidden w-full bg-gray-200 rounded-full h-4 mb-2">
-                <div id="progress-bar" class="progress-bar-fill bg-green-600 h-4 rounded-full" style="width: 0%"></div>
-            </div>
+            <p id="loading-msg" class="text-gray-600 mb-6 text-sm">용량에 따라 대기 시간이 소요될 수 있습니다.<br>화면을 새로고침하지 마세요.</p>
+            <div id="progress-container" class="hidden w-full bg-gray-200 rounded-full h-4 mb-2"><div id="progress-bar" class="progress-bar-fill bg-green-600 h-4 rounded-full" style="width: 0%"></div></div>
             <p id="progress-text" class="hidden text-green-700 font-bold text-xl mt-2">0%</p>
         </div>
 
         <div id="step-completed" class="hidden fade-in max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center border-t-8 border-green-500">
             <i data-lucide="check-circle-2" class="w-20 h-20 mx-auto text-green-500 mb-4"></i>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">접수 완료!</h2><p class="text-gray-600 mb-6">참여해 주셔서 감사합니다.</p>
-            <div id="summary" class="bg-gray-50 p-4 rounded-lg text-sm text-left text-gray-700 mb-6 space-y-2"></div>
-            <p id="extra-info" class="text-sm font-bold"></p>
-            <button onclick="location.reload()" class="mt-6 text-green-600 font-bold underline text-sm">초기 화면으로</button>
+            <div id="summary" class="bg-gray-50 p-4 rounded-lg text-sm text-left text-gray-700 mb-6 space-y-2 border border-gray-100"></div>
+            <p id="extra-info" class="text-base p-4 rounded-lg bg-green-50 border border-green-100"></p>
+            <button onclick="location.reload()" class="mt-8 text-green-600 font-bold underline text-sm">초기 화면으로 돌아가기</button>
         </div>
 
         <div id="step-form" class="hidden fade-in bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
@@ -115,21 +112,11 @@
                             <label class="block text-sm font-medium mb-3">작품 유형 *</label>
                             <input type="hidden" id="workTypeInput" name="workType" value="">
                             <div class="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                                <button type="button" onclick="selectWorkType('그림')" id="btn-work-그림" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white">
-                                    <i data-lucide="palette" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">그림</span>
-                                </button>
-                                <button type="button" onclick="selectWorkType('글쓰기')" id="btn-work-글쓰기" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white">
-                                    <i data-lucide="pen-tool" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">글쓰기</span>
-                                </button>
-                                <button type="button" onclick="selectWorkType('사진')" id="btn-work-사진" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white">
-                                    <i data-lucide="camera" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">사진</span>
-                                </button>
-                                <button type="button" onclick="selectWorkType('동영상')" id="btn-work-동영상" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white">
-                                    <i data-lucide="video" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">동영상</span>
-                                </button>
-                                <button type="button" onclick="selectWorkType('기타')" id="btn-work-기타" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white">
-                                    <i data-lucide="more-horizontal" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">기타</span>
-                                </button>
+                                <button type="button" onclick="selectWorkType('그림')" id="btn-work-그림" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white"><i data-lucide="palette" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">그림</span></button>
+                                <button type="button" onclick="selectWorkType('글쓰기')" id="btn-work-글쓰기" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white"><i data-lucide="pen-tool" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">글쓰기</span></button>
+                                <button type="button" onclick="selectWorkType('사진')" id="btn-work-사진" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white"><i data-lucide="camera" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">사진</span></button>
+                                <button type="button" onclick="selectWorkType('동영상')" id="btn-work-동영상" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white"><i data-lucide="video" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">동영상</span></button>
+                                <button type="button" onclick="selectWorkType('기타')" id="btn-work-기타" class="work-btn flex flex-col items-center justify-center p-4 border border-gray-300 rounded-xl hover:border-green-500 transition cursor-pointer text-gray-600 bg-white"><i data-lucide="more-horizontal" class="w-6 h-6 mb-2"></i><span class="text-sm font-bold">기타</span></button>
                             </div>
                             <input type="text" id="workTypeOther" name="workTypeOther" placeholder="어떤 유형의 작품인지 적어주세요" class="hidden w-full p-3 mt-4 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-gray-50">
                         </div>
@@ -141,14 +128,20 @@
                 <section class="bg-green-50 p-6 rounded-xl border border-green-100">
                     <h2 class="text-lg font-bold mb-4">접수 방법 선택</h2>
                     <div class="flex gap-6 mb-6">
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="submissionType" value="online" checked onchange="toggleSubmissionType(this)" class="w-4 h-4 text-green-600"><span class="font-medium">온라인 접수</span></label>
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="submissionType" value="onsite" onchange="toggleSubmissionType(this)" class="w-4 h-4 text-green-600"><span class="font-medium">현장 접수</span></label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="submissionType" value="online" checked onchange="toggleSubmissionType(this)" class="w-4 h-4 text-green-600">
+                            <span class="font-medium">온라인 접수</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="submissionType" value="onsite" onchange="toggleSubmissionType(this)" class="w-4 h-4 text-green-600">
+                            <span class="font-medium">현장 접수</span>
+                        </label>
                     </div>
 
                     <div id="online-options" class="space-y-4">
                         <div class="bg-white p-6 rounded-lg border-2 border-dashed border-gray-200 field-container">
                             <label class="block text-sm font-bold mb-3 flex items-center text-gray-800"><i data-lucide="upload-cloud" class="w-5 h-5 mr-2 text-green-600"></i>작품 파일 업로드 (여러 개 선택 가능)</label>
-                            <input type="file" id="fileInput" name="file" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer transition">
+                            <input type="file" id="fileInput" name="file" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer transition">
                             <div id="fileList" class="mt-4 space-y-2 text-sm text-gray-600 hidden bg-gray-50 p-3 rounded-lg border"></div>
                             <p class="mt-4 text-xs text-gray-500 leading-relaxed">
                                 형식: HWP, JPG, PNG, PDF 등<br>
@@ -169,7 +162,17 @@
                             </div>
                         </label>
                     </div>
+
+                    <div id="onsite-guide" class="hidden mt-2 p-6 bg-amber-50 rounded-lg border-2 border-amber-200 flex items-start text-amber-900 shadow-inner">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 text-amber-600 mr-3 flex-shrink-0 mt-0.5"></i>
+                        <div class="text-sm space-y-2">
+                            <p class="text-base font-bold underline">현장 접수 선택 시 필수 확인</p>
+                            <p class="leading-relaxed">온라인 신청서를 먼저 제출하신 후, <strong>작품 실물을 학교 담임선생님께 직접 제출</strong>해 주셔야 최종 접수가 완료됩니다.</p>
+                            <p class="text-xs text-amber-700 opacity-80">* 실물 작품 미제출 시 심사 대상에서 제외될 수 있습니다.</p>
+                        </div>
+                    </div>
                 </section>
+
                 <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-green-700 shadow-lg transition">공모전 참가 신청 접수</button>
             </form>
         </div>
@@ -183,7 +186,7 @@
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8ENpmFycmj56t9hsmj6Pb2ihzot5TrLr3Q4E-bEUNw-UiRO0Bq1f3TXn34CU0DIYanA/exec';
         // =========================================================================
 
-        const MAX_TOTAL_SIZE = 15 * 1024 * 1024; // 15MB 제한 설정
+        const MAX_TOTAL_SIZE = 15 * 1024 * 1024;
 
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const listDiv = document.getElementById('fileList');
@@ -197,14 +200,11 @@
                     listDiv.innerHTML += `<div class="flex items-center"><i data-lucide="file" class="w-4 h-4 mr-2 text-green-600"></i><span class="truncate">${file.name}</span> <span class="ml-auto text-gray-400 text-xs">${sizeMB}MB</span></div>`;
                 });
                 lucide.createIcons();
-                
                 if(totalSize > MAX_TOTAL_SIZE) { 
-                    listDiv.innerHTML += `<div class="mt-3 bg-red-50 p-2 rounded text-red-600 font-bold text-xs"><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i>총 용량이 15MB를 초과하여 직접 업로드가 불가합니다.<br>아래의 [메일로 제출] 항목을 체크해 주세요.</div>`;
+                    listDiv.innerHTML += `<div class="mt-3 bg-red-50 p-2 rounded text-red-600 font-bold text-xs"><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i>용량 초과(15MB)로 업로드가 불가합니다. [메일 제출]을 선택해 주세요.</div>`;
                     lucide.createIcons();
                 }
-            } else {
-                listDiv.classList.add('hidden');
-            }
+            } else { listDiv.classList.add('hidden'); }
         });
 
         function showStep(stepId) {
@@ -223,7 +223,7 @@
             } else {
                 btns.check.className = 'flex-1 py-4 font-bold text-green-700 border-b-4 border-green-600 bg-white';
                 btns.apply.className = 'flex-1 py-4 font-bold text-gray-500 hover:text-green-600 transition';
-                secs.check.classList.remove('hidden'); secs.apply.classList.add('hidden');
+                secCheck.classList.remove('hidden'); secs.apply.classList.add('hidden');
             }
         }
 
@@ -232,11 +232,14 @@
             document.querySelectorAll('.work-btn').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('btn-work-' + type).classList.add('selected');
             document.getElementById('workTypeOther').classList.toggle('hidden', type !== '기타');
+            const err = document.getElementById('workTypeContainer').parentElement.querySelector('.error-text');
+            if(err) err.remove();
         }
 
         function toggleSubmissionType(radio) {
-            document.getElementById('online-options').classList.toggle('hidden', radio.value !== 'online');
-            document.getElementById('onsite-guide').classList.toggle('hidden', radio.value === 'online');
+            const isOnline = radio.value === 'online';
+            document.getElementById('online-options').classList.toggle('hidden', !isOnline);
+            document.getElementById('onsite-guide').classList.toggle('hidden', isOnline);
         }
 
         function toggleEmailOption(checkbox) {
@@ -275,40 +278,28 @@
                 if (!data[f]) { showError(input, '필수 항목입니다.'); hasError = true; }
             });
 
-            if (!data.workType) { showError(document.getElementById('workTypeContainer'), '작품 유형을 클릭해서 선택해주세요.'); hasError = true; }
-            else if (data.workType === '기타' && !data.workTypeOther) { showError(document.getElementById('workTypeOther'), '어떤 유형인지 직접 입력하세요.'); hasError = true; }
+            if (!data.workType) { showError(document.getElementById('workTypeContainer'), '작품 유형을 선택해주세요.'); hasError = true; }
+            else if (data.workType === '기타' && !data.workTypeOther) { showError(document.getElementById('workTypeOther'), '유형을 입력하세요.'); hasError = true; }
             
             const filesObj = document.getElementById('fileInput').files;
-            
-            // 용량 체크 로직 추가 (15MB 초과 시 차단)
             if (data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0) {
                 let currentTotalSize = 0;
                 for(let i=0; i<filesObj.length; i++) currentTotalSize += filesObj[i].size;
-                if(currentTotalSize > MAX_TOTAL_SIZE) {
-                    alert('첨부하신 파일의 총 용량이 15MB를 초과하여 서버 전송이 불가능합니다.\n\n화면 하단의 [파일 용량이 크거나 동영상인 경우 메일로 제출] 항목을 체크하신 후 접수해 주시기 바랍니다.');
-                    return; // 폼 전송 중단
-                }
+                if(currentTotalSize > MAX_TOTAL_SIZE) { alert('파일 용량이 15MB를 초과했습니다. [메일 제출]을 선택해 주세요.'); return; }
             }
 
             if (data.submissionType === 'online' && !data.submitByEmail && filesObj.length === 0) { 
-                showError(document.getElementById('fileInput'), '파일을 하나 이상 선택하거나 메일 제출을 체크하세요.'); 
-                hasError = true; 
+                showError(document.getElementById('fileInput'), '파일을 선택하거나 메일 제출을 체크하세요.'); hasError = true; 
             }
 
-            if (hasError) {
-                window.scrollTo({top: document.querySelector('.error-text').offsetTop - 100, behavior: 'smooth'});
-                return;
-            }
+            if (hasError) { window.scrollTo({top: document.querySelector('.error-text').offsetTop - 100, behavior: 'smooth'}); return; }
 
             const isFileUpload = data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0;
-            
-            // 로딩 화면 UI 세팅
-            document.getElementById('loading-title').innerText = isFileUpload ? "작품 파일들을 안전하게 전송 중입니다" : "신청 정보를 접수 중입니다";
+            document.getElementById('loading-title').innerText = isFileUpload ? "작품 파일을 전송 중입니다" : "신청 정보를 접수 중입니다";
             document.getElementById('progress-container').classList.toggle('hidden', !isFileUpload);
             document.getElementById('progress-text').classList.toggle('hidden', !isFileUpload);
             showStep('loading');
 
-            // ★ UI(로딩화면)가 먼저 렌더링 될 수 있도록 0.1초 대기 (멈춤 현상 해결 핵심) ★
             await new Promise(resolve => setTimeout(resolve, 100));
 
             try {
@@ -322,87 +313,56 @@
                 }
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", GOOGLE_SCRIPT_URL, true);
-                
-                xhr.upload.onprogress = e => { 
-                    if (e.lengthComputable && isFileUpload) { 
-                        const p = Math.round((e.loaded / e.total) * 100); 
-                        document.getElementById('progress-bar').style.width = p + '%'; 
-                        document.getElementById('progress-text').innerText = p + '%'; 
-                        if(p >= 100) document.getElementById('loading-title').innerText = "전송 완료! 시트에 분할 저장 중입니다...";
-                    } 
-                };
-                
-                xhr.onload = () => { 
-                    if (xhr.status === 200) {
-                        const res = JSON.parse(xhr.responseText);
-                        if (res.result === 'success') finish(data); 
-                        else { alert('서버 기록 중 오류가 발생했습니다: ' + res.error); showStep('form'); }
-                    } else { alert('서버 응답 오류가 발생했습니다.'); showStep('form'); }
-                };
-                xhr.onerror = () => { alert('인터넷 연결이 불안정합니다. 다시 시도해 주세요.'); showStep('form'); };
-                
+                xhr.upload.onprogress = e => { if (e.lengthComputable && isFileUpload) { const p = Math.round((e.loaded / e.total) * 100); document.getElementById('progress-bar').style.width = p + '%'; document.getElementById('progress-text').innerText = p + '%'; if(p >= 100) document.getElementById('loading-title').innerText = "전송 완료! 처리 중입니다..."; } };
+                xhr.onload = () => { if (xhr.status === 200) { finish(data); } else { alert('서버 오류'); showStep('form'); } };
+                xhr.onerror = () => { alert('연결 오류'); showStep('form'); };
                 xhr.send(JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail }));
-            } catch (err) { alert('파일 변환 중 오류가 발생했습니다.'); showStep('form'); }
+            } catch (err) { alert('처리 오류'); showStep('form'); }
         }
 
         function finish(data) {
-            document.getElementById('summary').innerHTML = `<p>학생: ${data.childName}</p><p>유형: ${data.workType === '기타' ? data.workTypeOther : data.workType}</p><p>방법: ${data.submissionType === 'online' ? (data.submitByEmail ? '온라인 (메일 별도 제출)' : '온라인 (파일 업로드 완료)') : '현장 접수 (실물 제출)'}</p>`;
+            document.getElementById('summary').innerHTML = `<p><strong>학생:</strong> ${data.childName}</p><p><strong>유형:</strong> ${data.workType === '기타' ? data.workTypeOther : data.workType}</p><p><strong>접수:</strong> ${data.submissionType === 'online' ? (data.submitByEmail ? '온라인 (메일 제출)' : '온라인 (파일 업로드)') : '현장 접수 (실물 제출)'}</p>`;
             const extra = document.getElementById('extra-info');
-            if (data.submitByEmail) { extra.className = 'text-green-700 text-sm font-bold mt-2 animate-pulse'; extra.innerText = '* nh901018-1@nonghyup.com 으로 메일을 꼭 보내주세요!'; } 
-            else if (data.submissionType === 'onsite') { extra.className = 'text-amber-700 text-sm font-bold mt-2'; extra.innerText = '* 담임선생님께 실물 작품을 꼭 제출해 주세요!'; } 
-            else { extra.innerText = ''; }
+            if (data.submitByEmail) { 
+                extra.className = 'text-green-700 text-sm font-bold mt-2 animate-pulse p-4 rounded-lg bg-green-50 border border-green-100'; 
+                extra.innerText = '메일(nh901018-1@nonghyup.com)로 작품을 꼭 보내주세요!'; 
+            } else if (data.submissionType === 'onsite') { 
+                extra.className = 'text-amber-700 text-sm font-bold mt-2 p-4 rounded-lg bg-amber-50 border border-amber-200'; 
+                extra.innerText = '신청서는 접수되었습니다. 이제 실물 작품을 담임선생님께 꼭 제출해 주세요!'; 
+            } else { extra.className = 'hidden'; }
             showStep('completed');
         }
 
-        // 조회 기능 로직
         async function checkSubmission() {
             const childName = document.getElementById('check-childName').value.trim();
             const guardianName = document.getElementById('check-guardianName').value.trim();
             const resultDiv = document.getElementById('check-result');
-            
             if(!childName || !guardianName) { alert('성명을 모두 입력해주세요.'); return; }
-
             document.getElementById('check-btn-text').innerText = '조회 중...';
             document.getElementById('check-spinner').classList.remove('hidden');
             resultDiv.classList.add('hidden');
-
             try {
-                const queryUrl = `${GOOGLE_SCRIPT_URL}?action=check&childName=${encodeURIComponent(childName)}&guardianName=${encodeURIComponent(guardianName)}`;
-                const response = await fetch(queryUrl);
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=check&childName=${encodeURIComponent(childName)}&guardianName=${encodeURIComponent(guardianName)}`);
                 const res = await response.json();
-
-                resultDiv.classList.remove('hidden');
-                resultDiv.innerHTML = ''; 
-
+                resultDiv.classList.remove('hidden'); resultDiv.innerHTML = ''; 
                 if (res.status === 'found') {
                     const header = document.createElement('div');
                     header.innerHTML = `<p class="text-green-700 font-bold text-center mb-4">총 ${res.data.length}건의 접수 내역이 있습니다.</p>`;
                     resultDiv.appendChild(header);
-
                     res.data.forEach((item) => {
                         const date = new Date(item.timestamp).toLocaleString('ko-KR');
                         let typeStr = item.submissionType;
                         if(item.submissionType === '온라인') typeStr = item.submitByEmail === 'O' ? '온라인 (메일 제출)' : '온라인 (파일 첨부)';
-                        
                         const card = document.createElement('div');
                         card.className = 'bg-white p-5 rounded-lg border border-gray-200 shadow-sm relative overflow-hidden';
-                        card.innerHTML = `
-                            <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                            <p class="text-xs text-gray-400 mb-2">${date} 접수</p>
-                            <p class="font-bold text-gray-800 text-base mb-1">${item.workType}</p>
-                            <p class="text-sm text-gray-600 mb-1">${item.childSchool} ${item.childName}</p>
-                            <p class="text-xs text-green-600 font-medium italic">${typeStr}</p>
-                        `;
+                        card.innerHTML = `<div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div><p class="text-xs text-gray-400 mb-2">${date}</p><p class="font-bold text-gray-800 text-base mb-1">${item.workType}</p><p class="text-sm text-gray-600 mb-1">${item.childSchool} ${item.childName}</p><p class="text-xs text-green-600 font-medium italic">${typeStr}</p>`;
                         resultDiv.appendChild(card);
                     });
                 } else {
                     resultDiv.innerHTML = `<div class="bg-gray-100 p-8 rounded-lg text-center"><i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-gray-400 mb-2"></i><p class="text-gray-500">접수 내역이 없습니다.</p></div>`;
                     lucide.createIcons();
                 }
-            } catch (err) { alert('조회 오류 발생'); } finally {
-                document.getElementById('check-btn-text').innerText = '조회하기';
-                document.getElementById('check-spinner').classList.add('hidden');
-            }
+            } catch (err) { alert('조회 오류'); } finally { document.getElementById('check-btn-text').innerText = '조회하기'; document.getElementById('check-spinner').classList.add('hidden'); }
         }
     </script>
 </body>
