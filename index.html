@@ -147,7 +147,6 @@
                             <label class="block text-sm font-bold mb-3 flex items-center text-gray-800"><i data-lucide="upload-cloud" class="w-5 h-5 mr-2 text-green-600"></i>작품 파일 업로드 (여러 개 선택 가능)</label>
                             
                             <input type="file" id="fileInput" name="file" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer transition">
-                            
                             <div id="fileList" class="mt-4 space-y-2 text-sm text-gray-600 hidden bg-gray-50 p-3 rounded-lg border border-gray-100"></div>
 
                             <p class="mt-4 text-xs text-gray-500 leading-relaxed">
@@ -157,12 +156,20 @@
                         </div>
                         <label class="flex items-start bg-white p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
                             <input type="checkbox" id="emailCheck" name="submitByEmail" onchange="toggleEmailOption(this)" class="mt-1 mr-3 w-5 h-5 text-green-600 rounded">
-                            <div class="text-sm">
+                            <div class="text-sm w-full">
                                 <p class="font-bold text-gray-800">파일이 크거나 업로드가 안 되면 메일로 제출</p>
-                                <div id="email-guide" class="hidden mt-3 p-3 bg-green-50 rounded border border-green-200 text-green-800">
-                                    <p class="text-xs">아래 메일로 파일을 별도 전송해 주세요. <strong>(메일 전송까지 완료하셔야 정상 접수됩니다)</strong></p>
-                                    <p class="text-base font-bold mt-1">nh901018-1@nonghyup.com</p>
+                                
+                                <div id="email-guide" class="hidden mt-3 p-4 bg-green-50 rounded-lg border border-green-200 text-green-800 w-full">
+                                    <p class="text-sm mb-2">아래 메일 주소로 작품을 별도 전송해 주세요. <strong class="text-red-600">메일 전송까지 완료하셔야 정상 접수됩니다.</strong></p>
+                                    <p class="text-lg font-bold mt-1 mb-3">nh901018-1@nonghyup.com</p>
+                                    <div class="bg-white p-3 rounded border border-green-100 text-sm">
+                                        <p class="font-bold text-gray-800 mb-2">📌 메일 전송 시 필수 확인</p>
+                                        <p class="text-gray-600 mb-1">- 메일 제목: <span class="font-semibold text-green-700">[공모전] 학생성명_작품명</span></p>
+                                        <p class="text-gray-600">- 첨부 파일명: <span class="font-semibold text-green-700 bg-green-50 px-1 rounded">학교명_학생성명_작품명</span></p>
+                                        <p class="text-gray-400 text-xs mt-1 pl-3">(예: 제주초_김농협_제주의풍경.jpg)</p>
+                                    </div>
                                 </div>
+
                             </div>
                         </label>
                     </div>
@@ -180,10 +187,11 @@
     <script>
         lucide.createIcons();
 
-        // ★★★ [주의] 방금 [새 배포]로 발급받은 구글 웹 앱 URL을 반드시 아래에 넣어주세요! ★★★
+        // =========================================================================
+        // ★★★ [주의] 본인의 최신 구글 웹 앱 URL을 아래 작은따옴표 사이에 꼭 넣어주세요! ★★★
+        // =========================================================================
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8ENpmFycmj56t9hsmj6Pb2ihzot5TrLr3Q4E-bEUNw-UiRO0Bq1f3TXn34CU0DIYanA/exec';
 
-        // 파일 여러 개 선택 시 화면에 이름 띄우기 로직
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const listDiv = document.getElementById('fileList');
             listDiv.innerHTML = '';
@@ -197,8 +205,7 @@
                 });
                 lucide.createIcons();
                 
-                // 용량 경고
-                if(totalSize > 50 * 1024 * 1024) { // 50MB 이상일 때
+                if(totalSize > 50 * 1024 * 1024) { 
                     listDiv.innerHTML += `<div class="mt-2 text-red-500 font-bold text-xs"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>총 용량이 50MB를 초과합니다. 업로드 중 오류가 발생할 수 있으니 메일 제출을 권장합니다.</div>`;
                     lucide.createIcons();
                 }
@@ -230,7 +237,6 @@
             }
         }
 
-        // 아이콘 버튼 선택 로직
         function selectWorkType(type) {
             document.getElementById('workTypeInput').value = type;
             document.querySelectorAll('.work-btn').forEach(btn => btn.classList.remove('selected'));
@@ -283,11 +289,9 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             
-            // 작품 유형은 히든 인풋에서 수동으로 가져옴
             data.workType = document.getElementById('workTypeInput').value;
 
             let hasError = false;
-            // 에러 초기화
             document.querySelectorAll('.error-text').forEach(e => e.remove());
 
             const fields = ['childSchool', 'childName', 'childGrade', 'childClass', 'guardianName', 'guardianRelation', 'workTitle', 'workDescription'];
@@ -317,7 +321,6 @@
             showStep('loading');
 
             try {
-                // 여러 파일을 각각 Base64로 변환하여 배열에 담기
                 let filesDataArray = [];
                 if (isFileUpload) {
                     for(let i = 0; i < filesObj.length; i++) {
@@ -335,7 +338,6 @@
                     }
                 }
 
-                // data 객체에 files 배열 추가
                 const payload = JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail });
 
                 const xhr = new XMLHttpRequest();
@@ -383,7 +385,6 @@
             showStep('completed');
         }
 
-        // 조회 기능
         async function checkSubmission() {
             const childName = document.getElementById('check-childName').value.trim();
             const guardianName = document.getElementById('check-guardianName').value.trim();
