@@ -47,7 +47,7 @@
                 <div class="text-center mb-6">
                     <i data-lucide="search" class="w-12 h-12 mx-auto text-green-600 mb-3"></i>
                     <h2 class="text-xl font-bold text-gray-800">내 접수 내역 확인</h2>
-                    <p class="text-gray-500 text-sm mt-2">접수 시 입력했던 정보를 정확히 입력해 주세요.</p>
+                    <p class="text-gray-500 text-sm mt-2">이름이 일치하는 모든 접수 내역이 표시됩니다.</p>
                 </div>
                 <div class="space-y-4 max-w-sm mx-auto">
                     <div><label class="text-sm font-medium">학생 성명</label><input type="text" id="check-childName" class="w-full p-3 border rounded mt-1 outline-none focus:ring-2 focus:ring-green-500" placeholder="학생 이름"></div>
@@ -56,7 +56,7 @@
                         <span id="check-btn-text">조회하기</span><div id="check-spinner" class="hidden animate-spin rounded-full h-5 w-5 border-t-2 border-white ml-2"></div>
                     </button>
                 </div>
-                <div id="check-result" class="hidden mt-8 max-w-sm mx-auto bg-gray-50 p-6 rounded-lg border text-center"></div>
+                <div id="check-result" class="hidden mt-8 max-w-md mx-auto space-y-4"></div>
             </div>
         </div>
 
@@ -145,74 +145,32 @@
                     <div id="online-options" class="space-y-4">
                         <div class="bg-white p-6 rounded-lg border-2 border-dashed border-gray-200 field-container">
                             <label class="block text-sm font-bold mb-3 flex items-center text-gray-800"><i data-lucide="upload-cloud" class="w-5 h-5 mr-2 text-green-600"></i>작품 파일 업로드 (여러 개 선택 가능)</label>
-                            
-                            <input type="file" id="fileInput" name="file" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer transition">
-                            <div id="fileList" class="mt-4 space-y-2 text-sm text-gray-600 hidden bg-gray-50 p-3 rounded-lg border border-gray-100"></div>
-
-                            <p class="mt-4 text-xs text-gray-500 leading-relaxed">
-                                형식: <strong>HWP</strong>, JPG, PNG, PDF, MP4 등<br>
-                                <span class="text-blue-600 font-medium">* 50MB 이상의 고화질/대용량 파일은 메일 제출을 권장합니다.</span>
-                            </p>
+                            <input type="file" id="fileInput" name="file" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer transition">
+                            <div id="fileList" class="mt-4 space-y-2 text-sm text-gray-600 hidden bg-gray-50 p-3 rounded-lg border"></div>
+                            <p class="mt-4 text-xs text-gray-500 leading-relaxed">형식: HWP, JPG, PNG, PDF, MP4 등<br><span class="text-blue-600 font-medium">* 50MB 이상의 파일은 메일 제출을 권장합니다.</span></p>
                         </div>
                         <label class="flex items-start bg-white p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
                             <input type="checkbox" id="emailCheck" name="submitByEmail" onchange="toggleEmailOption(this)" class="mt-1 mr-3 w-5 h-5 text-green-600 rounded">
                             <div class="text-sm w-full">
                                 <p class="font-bold text-gray-800">파일이 크거나 업로드가 안 되면 메일로 제출</p>
-                                
                                 <div id="email-guide" class="hidden mt-3 p-4 bg-green-50 rounded-lg border border-green-200 text-green-800 w-full">
-                                    <p class="text-sm mb-2">아래 메일 주소로 작품을 별도 전송해 주세요. <strong class="text-red-600">메일 전송까지 완료하셔야 정상 접수됩니다.</strong></p>
-                                    <p class="text-lg font-bold mt-1 mb-3">nh901018-1@nonghyup.com</p>
-                                    <div class="bg-white p-3 rounded border border-green-100 text-sm">
-                                        <p class="font-bold text-gray-800 mb-2">📌 메일 전송 시 필수 확인</p>
-                                        <p class="text-gray-600 mb-1">- 메일 제목: <span class="font-semibold text-green-700">[공모전] 학생성명_작품명</span></p>
-                                        <p class="text-gray-600">- 첨부 파일명: <span class="font-semibold text-green-700 bg-green-50 px-1 rounded">학교명_학생성명_작품명</span></p>
-                                        <p class="text-gray-400 text-xs mt-1 pl-3">(예: 제주초_김농협_제주의풍경.jpg)</p>
+                                    <p class="text-sm mb-2 font-bold">nh901018-1@nonghyup.com</p>
+                                    <div class="bg-white p-3 rounded border text-sm text-gray-600">
+                                        파일명: <span class="text-green-700 font-bold">학교명_학생성명_작품명</span>
                                     </div>
                                 </div>
-
                             </div>
                         </label>
                     </div>
-                    <div id="onsite-guide" class="hidden mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200 flex items-start text-amber-900">
-                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 mr-2 flex-shrink-0 mt-0.5"></i>
-                        <p class="text-sm leading-relaxed"><strong>온라인 신청서 제출 후 담임선생님께 실물 작품을 꼭 전달</strong>해 주셔야 최종 접수가 완료됩니다.</p>
-                    </div>
                 </section>
-
-                <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-green-700 shadow-lg flex items-center justify-center transition">공모전 참가 신청 접수</button>
+                <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-green-700 shadow-lg transition">공모전 참가 신청 접수</button>
             </form>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
-
-        // =========================================================================
-        // ★★★ [주의] 본인의 최신 구글 웹 앱 URL을 아래 작은따옴표 사이에 꼭 넣어주세요! ★★★
-        // =========================================================================
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8ENpmFycmj56t9hsmj6Pb2ihzot5TrLr3Q4E-bEUNw-UiRO0Bq1f3TXn34CU0DIYanA/exec';
-
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const listDiv = document.getElementById('fileList');
-            listDiv.innerHTML = '';
-            if(this.files.length > 0) {
-                listDiv.classList.remove('hidden');
-                let totalSize = 0;
-                Array.from(this.files).forEach((file, index) => {
-                    totalSize += file.size;
-                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                    listDiv.innerHTML += `<div class="flex items-center"><i data-lucide="file" class="w-4 h-4 mr-2 text-green-600"></i><span class="truncate">${file.name}</span> <span class="ml-auto text-gray-400 text-xs">${sizeMB}MB</span></div>`;
-                });
-                lucide.createIcons();
-                
-                if(totalSize > 50 * 1024 * 1024) { 
-                    listDiv.innerHTML += `<div class="mt-2 text-red-500 font-bold text-xs"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>총 용량이 50MB를 초과합니다. 업로드 중 오류가 발생할 수 있으니 메일 제출을 권장합니다.</div>`;
-                    lucide.createIcons();
-                }
-            } else {
-                listDiv.classList.add('hidden');
-            }
-        });
 
         function showStep(stepId) {
             document.querySelectorAll('#app > div').forEach(div => div.classList.add('hidden'));
@@ -221,176 +179,26 @@
         }
 
         function toggleMainTab(tab) {
-            const btnApply = document.getElementById('tab-apply');
-            const btnCheck = document.getElementById('tab-check');
-            const secApply = document.getElementById('section-apply');
-            const secCheck = document.getElementById('section-check');
-
+            const btns = { apply: document.getElementById('tab-apply'), check: document.getElementById('tab-check') };
+            const secs = { apply: document.getElementById('section-apply'), check: document.getElementById('section-check') };
             if (tab === 'apply') {
-                btnApply.className = 'flex-1 py-4 font-bold text-green-700 border-b-4 border-green-600 bg-white';
-                btnCheck.className = 'flex-1 py-4 font-bold text-gray-500 hover:text-green-600 transition';
-                secApply.classList.remove('hidden'); secCheck.classList.add('hidden');
+                btns.apply.className = 'flex-1 py-4 font-bold text-green-700 border-b-4 border-green-600 bg-white';
+                btns.check.className = 'flex-1 py-4 font-bold text-gray-500 hover:text-green-600 transition';
+                secs.apply.classList.remove('hidden'); secs.check.classList.add('hidden');
             } else {
-                btnCheck.className = 'flex-1 py-4 font-bold text-green-700 border-b-4 border-green-600 bg-white';
-                btnApply.className = 'flex-1 py-4 font-bold text-gray-500 hover:text-green-600 transition';
-                secCheck.classList.remove('hidden'); secApply.classList.add('hidden');
+                btns.check.className = 'flex-1 py-4 font-bold text-green-700 border-b-4 border-green-600 bg-white';
+                btns.apply.className = 'flex-1 py-4 font-bold text-gray-500 hover:text-green-600 transition';
+                secs.check.classList.remove('hidden'); secs.apply.classList.add('hidden');
             }
         }
 
-        function selectWorkType(type) {
-            document.getElementById('workTypeInput').value = type;
-            document.querySelectorAll('.work-btn').forEach(btn => btn.classList.remove('selected'));
-            document.getElementById('btn-work-' + type).classList.add('selected');
-            document.getElementById('workTypeOther').classList.toggle('hidden', type !== '기타');
-            
-            const err = document.getElementById('workTypeContainer').parentElement.querySelector('.error-text');
-            if(err) err.remove();
-        }
-
-        function toggleSubmissionType(radio) {
-            const isOnline = radio.value === 'online';
-            document.getElementById('online-options').classList.toggle('hidden', !isOnline);
-            document.getElementById('onsite-guide').classList.toggle('hidden', isOnline);
-        }
-
-        function toggleEmailOption(checkbox) {
-            document.getElementById('email-guide').classList.toggle('hidden', !checkbox.checked);
-            document.getElementById('fileInput').disabled = checkbox.checked;
-            if(checkbox.checked) {
-                document.getElementById('fileList').classList.add('hidden');
-            } else if (document.getElementById('fileInput').files.length > 0) {
-                document.getElementById('fileList').classList.remove('hidden');
-            }
-        }
-
-        function showError(el, msg) {
-            const p = document.createElement('p');
-            p.className = 'error-text text-red-500 text-xs mt-1 font-medium';
-            p.innerText = msg;
-            if(el.id === 'workTypeContainer' || el.id === 'fileInput') {
-                el.parentElement.appendChild(p);
-            } else {
-                el.classList.add('border-red-500', 'bg-red-50');
-                el.parentElement.appendChild(p);
-            }
-        }
-
-        document.querySelectorAll('input:not([type="file"]):not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => {
-            el.addEventListener('input', () => {
-                el.classList.remove('border-red-500', 'bg-red-50');
-                const err = el.parentElement.querySelector('.error-text');
-                if (err) err.remove();
-            });
-        });
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            data.workType = document.getElementById('workTypeInput').value;
-
-            let hasError = false;
-            document.querySelectorAll('.error-text').forEach(e => e.remove());
-
-            const fields = ['childSchool', 'childName', 'childGrade', 'childClass', 'guardianName', 'guardianRelation', 'workTitle', 'workDescription'];
-            fields.forEach(f => {
-                const input = form.querySelector(`[name="${f}"]`);
-                if (!data[f]) { showError(input, '필수 항목입니다.'); hasError = true; }
-            });
-
-            if (!data.workType) { showError(document.getElementById('workTypeContainer'), '작품 유형을 클릭해서 선택해주세요.'); hasError = true; }
-            else if (data.workType === '기타' && !data.workTypeOther) { showError(document.getElementById('workTypeOther'), '어떤 유형인지 직접 입력하세요.'); hasError = true; }
-            
-            const filesObj = document.getElementById('fileInput').files;
-            if (data.submissionType === 'online' && !data.submitByEmail && filesObj.length === 0) { 
-                showError(document.getElementById('fileInput'), '파일을 하나 이상 선택하거나 메일 제출을 체크하세요.'); 
-                hasError = true; 
-            }
-
-            if (hasError) {
-                window.scrollTo({top: document.querySelector('.error-text').offsetTop - 100, behavior: 'smooth'});
-                return;
-            }
-
-            const isFileUpload = data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0;
-            document.getElementById('loading-title').innerText = isFileUpload ? "작품 파일들을 안전하게 전송 중입니다" : "신청 정보를 접수 중입니다";
-            document.getElementById('progress-container').classList.toggle('hidden', !isFileUpload);
-            document.getElementById('progress-text').classList.toggle('hidden', !isFileUpload);
-            showStep('loading');
-
-            try {
-                let filesDataArray = [];
-                if (isFileUpload) {
-                    for(let i = 0; i < filesObj.length; i++) {
-                        const f = filesObj[i];
-                        const base64Data = await new Promise((resolve) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result.split(',')[1]);
-                            reader.readAsDataURL(f);
-                        });
-                        filesDataArray.push({
-                            fileName: f.name,
-                            mimeType: f.type,
-                            fileData: base64Data
-                        });
-                    }
-                }
-
-                const payload = JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail });
-
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", GOOGLE_SCRIPT_URL, true);
-
-                xhr.upload.onprogress = function(e) {
-                    if (e.lengthComputable && isFileUpload) {
-                        const percent = Math.round((e.loaded / e.total) * 100);
-                        document.getElementById('progress-bar').style.width = percent + '%';
-                        document.getElementById('progress-text').innerText = percent + '%';
-                        if (percent >= 100) document.getElementById('loading-title').innerText = "전송 완료! 시트에 분할 저장 중입니다...";
-                    }
-                };
-
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        const res = JSON.parse(xhr.responseText);
-                        if (res.result === 'success') finish(data);
-                        else { alert('서버 오류: ' + res.error); showStep('form'); }
-                    } else { alert('서버 응답 오류가 발생했습니다.'); showStep('form'); }
-                };
-                xhr.onerror = function() { alert('네트워크 연결 오류가 발생했습니다.'); showStep('form'); };
-                xhr.send(payload);
-
-            } catch (err) {
-                alert('파일 변환 중 오류 발생: ' + err.message);
-                showStep('form');
-            }
-        }
-
-        function finish(data) {
-            document.getElementById('summary').innerHTML = `
-                <p><strong>학생:</strong> ${data.childName}</p>
-                <p><strong>작품유형:</strong> ${data.workType === '기타' ? data.workTypeOther : data.workType}</p>
-                <p><strong>접수방법:</strong> ${data.submissionType === 'online' ? (data.submitByEmail ? '온라인 (메일 별도 제출)' : '온라인 (파일 업로드 완료)') : '현장 접수 (실물 제출 요망)'}</p>
-            `;
-            const extra = document.getElementById('extra-info');
-            if (data.submitByEmail) {
-                extra.className = 'text-green-700 text-sm font-bold animate-pulse mt-2';
-                extra.innerText = '* nh901018-1@nonghyup.com 으로 메일을 꼭 보내주세요!';
-            } else if (data.submissionType === 'onsite') {
-                extra.className = 'text-amber-700 text-sm font-bold mt-2';
-                extra.innerText = '* 담임선생님께 실물 작품을 꼭 제출해 주세요!';
-            } else { extra.innerText = ''; }
-            showStep('completed');
-        }
-
+        // 접수 내역 조회 (전체 리스트 대응 버전)
         async function checkSubmission() {
             const childName = document.getElementById('check-childName').value.trim();
             const guardianName = document.getElementById('check-guardianName').value.trim();
             const resultDiv = document.getElementById('check-result');
             
-            if(!childName || !guardianName) { alert('학생 성명과 보호자 성명을 모두 입력해주세요.'); return; }
+            if(!childName || !guardianName) { alert('성명을 모두 입력해주세요.'); return; }
 
             document.getElementById('check-btn-text').innerText = '조회 중...';
             document.getElementById('check-spinner').classList.remove('hidden');
@@ -402,37 +210,89 @@
                 const res = await response.json();
 
                 resultDiv.classList.remove('hidden');
-                if (res.status === 'found') {
-                    const data = res.data;
-                    const date = new Date(data.timestamp).toLocaleString('ko-KR');
-                    let submitTypeStr = data.submissionType;
-                    if(data.submissionType === '온라인') { submitTypeStr = data.submitByEmail === 'O' ? '온라인 (메일 제출)' : '온라인 (파일 첨부)'; }
+                resultDiv.innerHTML = ''; // 초기화
 
-                    resultDiv.innerHTML = `
-                        <i data-lucide="check-circle" class="w-10 h-10 mx-auto text-green-500 mb-2"></i>
-                        <p class="text-green-700 font-bold text-lg mb-1">접수 내역이 확인되었습니다!</p>
-                        <div class="text-left text-sm text-gray-700 mt-4 space-y-1 inline-block">
-                            <p><strong>학생:</strong> ${data.childSchool} ${data.childName}</p>
-                            <p><strong>작품유형:</strong> ${data.workType}</p>
-                            <p><strong>접수방법:</strong> ${submitTypeStr}</p>
-                            <p><strong>접수일시:</strong> ${date}</p>
-                        </div>
-                    `;
-                    lucide.createIcons();
+                if (res.status === 'found') {
+                    const header = document.createElement('div');
+                    header.innerHTML = `<p class="text-green-700 font-bold text-center mb-4">총 ${res.data.length}건의 접수 내역이 있습니다.</p>`;
+                    resultDiv.appendChild(header);
+
+                    res.data.forEach((item, idx) => {
+                        const date = new Date(item.timestamp).toLocaleString('ko-KR');
+                        let typeStr = item.submissionType;
+                        if(item.submissionType === '온라인') typeStr = item.submitByEmail === 'O' ? '온라인 (메일 제출)' : '온라인 (파일 첨부)';
+                        
+                        const card = document.createElement('div');
+                        card.className = 'bg-white p-5 rounded-lg border border-gray-200 shadow-sm relative overflow-hidden';
+                        card.innerHTML = `
+                            <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                            <p class="text-xs text-gray-400 mb-2">${date} 접수</p>
+                            <p class="font-bold text-gray-800 text-base mb-1">${item.workType}</p>
+                            <p class="text-sm text-gray-600 mb-1">${item.childSchool} ${item.childName}</p>
+                            <p class="text-xs text-green-600 font-medium italic">${typeStr}</p>
+                        `;
+                        resultDiv.appendChild(card);
+                    });
                 } else {
-                    resultDiv.innerHTML = `
-                        <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-500 mb-2"></i>
-                        <p class="text-red-600 font-bold mb-1">접수 내역을 찾을 수 없습니다.</p>
-                        <p class="text-xs text-gray-500 mt-2">이름을 다시 한번 확인하시거나 새로 접수해 주세요.</p>
-                    `;
+                    resultDiv.innerHTML = `<div class="bg-gray-100 p-8 rounded-lg text-center"><i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-gray-400 mb-2"></i><p class="text-gray-500">접수 내역이 없습니다.</p></div>`;
                     lucide.createIcons();
                 }
-            } catch (err) {
-                alert('조회 중 오류가 발생했습니다. 구글 앱스 스크립트 주소를 확인해주세요.');
-            } finally {
+            } catch (err) { alert('조회 오류 발생'); } finally {
                 document.getElementById('check-btn-text').innerText = '조회하기';
                 document.getElementById('check-spinner').classList.add('hidden');
             }
+        }
+
+        // 아이콘 선택 및 기타 로직 (기존과 동일)
+        function selectWorkType(type) {
+            document.getElementById('workTypeInput').value = type;
+            document.querySelectorAll('.work-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('btn-work-' + type).classList.add('selected');
+            document.getElementById('workTypeOther').classList.toggle('hidden', type !== '기타');
+        }
+        function toggleSubmissionType(radio) {
+            document.getElementById('online-options').classList.toggle('hidden', radio.value !== 'online');
+            document.getElementById('onsite-guide').classList.toggle('hidden', radio.value === 'online');
+        }
+        function toggleEmailOption(checkbox) {
+            document.getElementById('email-guide').classList.toggle('hidden', !checkbox.checked);
+            document.getElementById('fileInput').disabled = checkbox.checked;
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = Object.fromEntries(new FormData(form).entries());
+            data.workType = document.getElementById('workTypeInput').value;
+            if(!data.childName || !data.workType) { alert('필수 항목을 입력하세요.'); return; }
+
+            const filesObj = document.getElementById('fileInput').files;
+            const isFileUpload = data.submissionType === 'online' && !data.submitByEmail && filesObj.length > 0;
+            
+            document.getElementById('loading-title').innerText = isFileUpload ? "작품 파일을 전송 중입니다" : "접수 정보를 기록 중입니다";
+            document.getElementById('progress-container').classList.toggle('hidden', !isFileUpload);
+            showStep('loading');
+
+            try {
+                let filesDataArray = [];
+                if (isFileUpload) {
+                    for(let i=0; i<filesObj.length; i++) {
+                        const f = filesObj[i];
+                        const base64 = await new Promise(r => { const reader = new FileReader(); reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(f); });
+                        filesDataArray.push({ fileName: f.name, mimeType: f.type, fileData: base64 });
+                    }
+                }
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", GOOGLE_SCRIPT_URL, true);
+                xhr.upload.onprogress = e => { if (e.lengthComputable && isFileUpload) { const p = Math.round((e.loaded / e.total) * 100); document.getElementById('progress-bar').style.width = p + '%'; document.getElementById('progress-text').innerText = p + '%'; } };
+                xhr.onload = () => { if (JSON.parse(xhr.responseText).result === 'success') finish(data); else alert('오류'); };
+                xhr.send(JSON.stringify({ ...data, files: filesDataArray, submitByEmail: !!data.submitByEmail }));
+            } catch (err) { alert('오류'); showStep('form'); }
+        }
+
+        function finish(data) {
+            document.getElementById('summary').innerHTML = `<p>학생: ${data.childName}</p><p>유형: ${data.workType}</p>`;
+            showStep('completed');
         }
     </script>
 </body>
