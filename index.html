@@ -29,7 +29,7 @@
                 </h2>
                 <div class="bg-gray-50 p-6 rounded-lg text-sm text-gray-700 space-y-3 mb-6">
                     <p><strong>목적:</strong> 본인 확인, 심사 및 시상, 홍보, 문의 응대</p>
-                    <p><strong>항목:</strong> (아동) 학교, 성명, 학년, 반 / (보호자) 성명, 연락처, 관계</p>
+                    <p><strong>항목:</strong> (아동) 학교, 성명, 학년, 반 / (보호자) 성명, 관계</p>
                     <p><strong>보유기간:</strong> 종료 후 6개월 (수상자는 1년)</p>
                     <p class="text-xs text-gray-500">* 동의 거부 시 공모전 참여가 제한됩니다.</p>
                 </div>
@@ -114,10 +114,6 @@
                             <label class="text-sm font-medium">학생과의 관계 *</label>
                             <input type="text" name="guardianRelation" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none" placeholder="예: 부, 모">
                         </div>
-                        <div class="sm:col-span-2 field-container" data-name="guardianContact">
-                            <label class="text-sm font-medium">보호자 연락처 *</label>
-                            <input type="tel" name="guardianContact" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none" placeholder="010-0000-0000">
-                        </div>
                     </div>
                 </section>
 
@@ -201,22 +197,20 @@
     </div>
 
     <script>
-        // 루사이드 아이콘 초기화
         lucide.createIcons();
 
         // ----------------------------------------------------
-        // ★ 여기에 구글 앱스 스크립트 '웹 앱 URL'을 붙여넣으세요!
+        // ★ 본인의 구글 앱스 스크립트 웹 앱 URL을 아래에 넣으세요 ★
         // ----------------------------------------------------
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzM6UKS3XuQZiHOFGiqzR4nRrbfTyQ7pCUi0YfGDw7dvANNuB3zpOF7Av0QbD41dZDNzg/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzM6UKS3XuQZiHOFGiqzR4nRrbfTyQ7pCUi0YfGDw7dvANNuB3zpOF7Av0QbD41dZDNzg/exec
+';
 
-        // 화면 전환 로직
         function showStep(stepId) {
             document.querySelectorAll('#app > div').forEach(div => div.classList.add('hidden'));
             document.getElementById('step-' + stepId).classList.remove('hidden');
             window.scrollTo(0, 0);
         }
 
-        // 입력 시 에러 제거 로직
         document.querySelectorAll('input, select, textarea').forEach(el => {
             el.addEventListener('input', () => {
                 el.classList.remove('border-red-500', 'bg-red-50');
@@ -249,9 +243,9 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             
-            // 유효성 검사
             let hasError = false;
-            const fields = ['childSchool', 'childName', 'childGrade', 'childClass', 'guardianName', 'guardianRelation', 'guardianContact', 'workType', 'workTitle', 'workDescription'];
+            // 유효성 검사 필수 항목 (보호자 연락처 제외 완료)
+            const fields = ['childSchool', 'childName', 'childGrade', 'childClass', 'guardianName', 'guardianRelation', 'workType', 'workTitle', 'workDescription'];
             
             fields.forEach(field => {
                 const input = form.querySelector(`[name="${field}"]`);
@@ -273,7 +267,6 @@
 
             if (hasError) return;
 
-            // 전송 준비
             showStep('loading');
 
             try {
@@ -300,24 +293,27 @@
                     submitByEmail: !!data.submitByEmail
                 };
 
-                // 실제 전송
-                if (GOOGLE_SCRIPT_URL.includes('여기에')) {
-                    console.log('테스트 모드:', payload);
-                    setTimeout(() => finish(data), 1500);
+                if (GOOGLE_SCRIPT_URL.includes('여기에_복사한')) {
+                    alert('주의: 구글 스크립트 URL이 입력되지 않았습니다. 코드를 다시 확인해주세요.');
+                    showStep('form');
+                    return;
+                } 
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                if (result.result === 'success') {
+                    finish(data);
                 } else {
-                    const response = await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-                    if (result.result === 'success') {
-                        finish(data);
-                    } else {
-                        throw new Error(result.error);
-                    }
+                    throw new Error(result.error);
                 }
+                
             } catch (err) {
-                alert('전송 오류: ' + err.message);
+                alert('전송 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                console.error(err);
                 showStep('form');
             }
         }
