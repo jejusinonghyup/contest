@@ -16,7 +16,6 @@
 <body class="bg-gray-50 min-h-screen">
 
     <div id="app" class="max-w-3xl mx-auto py-10 px-4">
-        <!-- 화면 1: 개인정보 동의서 -->
         <div id="step-consent" class="fade-in bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
             <div class="bg-green-600 px-6 py-8 text-center text-white">
                 <h1 class="text-2xl font-bold mb-2">[제주시농협 '꿈을 심는 DAY' 공모전]</h1>
@@ -43,39 +42,33 @@
             </div>
         </div>
 
-        <!-- 화면 2: 동의 거부 -->
         <div id="step-rejected" class="hidden fade-in max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
             <i data-lucide="x-circle" class="w-16 h-16 mx-auto text-red-500 mb-4"></i>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">접수 불가</h2>
             <p class="text-gray-600 mb-6">동의서에 동의하지 않으셨습니다. 접수가 종료됩니다.</p>
-            <button onclick="location.reload()" class="text-green-600 font-bold underline">다시 동의하기</button>
+            <button onclick="location.reload()" class="text-green-600 font-bold underline">처음으로 돌아가기</button>
         </div>
 
-        <!-- 화면 3: 로딩 중 -->
         <div id="step-loading" class="hidden fade-in text-center py-20">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mb-6 mx-auto"></div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">작품을 전송하고 있습니다...</h2>
             <p class="text-gray-600">파일 용량에 따라 최대 몇 분이 소요될 수 있습니다.<br>화면을 새로고침하지 마세요.</p>
         </div>
 
-        <!-- 화면 4: 완료 -->
         <div id="step-completed" class="hidden fade-in max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center border-t-8 border-green-500">
             <i data-lucide="check-circle-2" class="w-20 h-20 mx-auto text-green-500 mb-4"></i>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">접수 완료!</h2>
             <p class="text-gray-600 mb-6">참여해 주셔서 대단히 감사합니다.</p>
             <div id="summary" class="bg-gray-50 p-4 rounded-lg text-sm text-left text-gray-700 mb-6 space-y-2">
-                <!-- 결과 요약 출력 -->
-            </div>
+                </div>
             <p id="extra-info" class="text-sm font-bold"></p>
         </div>
 
-        <!-- 화면 5: 메인 신청서 폼 -->
         <div id="step-form" class="hidden fade-in bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
             <div class="bg-green-600 p-6 text-white font-bold flex items-center text-xl">
                 <i data-lucide="file-text" class="mr-2"></i> 공모전 참가 신청서
             </div>
             <form id="submissionForm" class="p-8 space-y-10" onsubmit="handleFormSubmit(event)">
-                <!-- 학생 정보 -->
                 <section>
                     <h2 class="text-lg font-bold border-b pb-2 mb-4 flex items-center text-green-700">
                         <i data-lucide="school" class="mr-2 w-5 h-5"></i> 학생 정보
@@ -100,7 +93,6 @@
                     </div>
                 </section>
 
-                <!-- 보호자 정보 -->
                 <section>
                     <h2 class="text-lg font-bold border-b pb-2 mb-4 flex items-center text-green-700">
                         <i data-lucide="user" class="mr-2 w-5 h-5"></i> 법정대리인 정보
@@ -117,7 +109,6 @@
                     </div>
                 </section>
 
-                <!-- 작품 정보 -->
                 <section>
                     <h2 class="text-lg font-bold border-b pb-2 mb-4 flex items-center text-green-700">
                         <i data-lucide="file-check" class="mr-2 w-5 h-5"></i> 작품 정보
@@ -146,7 +137,6 @@
                     </div>
                 </section>
 
-                <!-- 접수 방식 -->
                 <section class="bg-green-50 p-6 rounded-xl border border-green-100">
                     <h2 class="text-lg font-bold mb-4">접수 방법 선택</h2>
                     <div class="flex gap-6 mb-6">
@@ -190,7 +180,7 @@
                 </section>
 
                 <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-green-700 transition shadow-lg flex items-center justify-center">
-                    공모전 참가 신청 완료
+                    공모전 참가 신청
                 </button>
             </form>
         </div>
@@ -243,7 +233,6 @@
             const data = Object.fromEntries(formData.entries());
             
             let hasError = false;
-            // 유효성 검사 필수 항목 (보호자 연락처 제외 완료)
             const fields = ['childSchool', 'childName', 'childGrade', 'childClass', 'guardianName', 'guardianRelation', 'workType', 'workTitle', 'workDescription'];
             
             fields.forEach(field => {
